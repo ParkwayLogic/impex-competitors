@@ -78,17 +78,23 @@ def main():
     if ('cn1' in rg) and ('cn2' in rg):  # given two commodity codes
         common_HS = [rg['cn1'], rg['cn2']]
     elif 'name' in rg:  # given a company name
-        tops = [t for t in get_top_nodes(Gph, rg['name'])]
-        if len(tops) > 1:
-            top1, top2 = tops[:2]
-        else:
+        if rg['name'] in Gph:  # found company among exporters
+            tops = [t for t in get_top_nodes(Gph, rg['name'])]
+            if len(tops) > 1:
+                top1, top2 = tops[:2]
+                common_HS = [top1[1], top2[1]]
+        else: # company not found among exporters, or not enough commodities
             """
             1. Look up SIC code from company name
             2. Lookup top two HS codes for SIC code, from table to be created
             """
+            topHS_by_SIC = pd.read_csv('top_HS_by_SIC.csv', header=None,
+                names=['SIC','CN','MonthCount'], index_col=None)
+            tmp = topHS_by_SIC[topHS_by_SIC['SIC']=='10110 - Processing and preserving of meat']
+            print(tmp)
+            common_HS = list(tmp['CN'])
             print('SIC-based search not implemented')
-            raise NotImplementedError
-        common_HS = [top1[1], top2[1]]
+            # raise NotImplementedError
     else:
         print('No valid search paramters given. Proceeding with default.')
         common_HS=['94033019','94034090']
@@ -103,7 +109,7 @@ def main():
     # nodes1 = Gph.subgraph(find_common_codes(Gph, common_HS))
     # nx.write_gexf(nodes1,'common_subgraph.gexf')
     # Generate text response
-    # names = [n for n in nx.common_neighbors(Gph, common_HS[0], common_HS[1])]
+    names = [n for n in nx.common_neighbors(Gph, common_HS[0], common_HS[1])]
     # s = ' '.join([
     #     'You have {0} companies in your neighbourhood'
     # ])
@@ -129,7 +135,7 @@ def main():
         retvals = dict([(c[1], c[2]) for c in get_top_nodes(Gph, name)])
         retdict[name] = retvals
     #print(retdict)
-    return jsonify({'competitors': dict(retdict)})
+    return jsonify({'competitors': dict(retdict)}), 200
 
 
 @app.errorhandler(500)
