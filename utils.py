@@ -1,6 +1,7 @@
 """
 Utility functions for HS codes and SIC codes
 """
+import numpy as np
 import pandas as pd
 import sys, logging
 
