@@ -94,36 +94,36 @@ def main():
         common_HS=['94033019','94034090']
     
     print('Identified', common_HS[0], common_HS[1])
-    c1 = utils.get_desc_by_CN(common_HS[0])
-    c2 = utils.get_desc_by_CN(common_HS[1])
-    print('Preparing subgraph for\n{0} - {1}\nand\n{2} - {3}'.format(
-        common_HS[0], c1['Self-Explanatory text (English)'].values[0],
-        common_HS[1], c2['Self-Explanatory text (English)'].values[0]
-    ))
-    nodes1 = Gph.subgraph(find_common_codes(Gph, common_HS))
-    nx.write_gexf(nodes1,'common_subgraph.gexf')
+    # c1 = utils.get_desc_by_CN(common_HS[0])
+    # c2 = utils.get_desc_by_CN(common_HS[1])
+    # print('Preparing subgraph for\n{0} - {1}\nand\n{2} - {3}'.format(
+    #     common_HS[0], c1['Self-Explanatory text (English)'].values[0],
+    #     common_HS[1], c2['Self-Explanatory text (English)'].values[0]
+    # ))
+    # nodes1 = Gph.subgraph(find_common_codes(Gph, common_HS))
+    # nx.write_gexf(nodes1,'common_subgraph.gexf')
     # Generate text response
-    names = [n for n in nx.common_neighbors(Gph, common_HS[0], common_HS[1])]
-    s = ' '.join([
-        'You have {0} companies in your neighbourhood'
-    ])
-    print(s.format(len(names)-1))
+    # names = [n for n in nx.common_neighbors(Gph, common_HS[0], common_HS[1])]
+    # s = ' '.join([
+    #     'You have {0} companies in your neighbourhood'
+    # ])
+    # print(s.format(len(names)-1))
     i = 0
     for name in names:
         cmdties = [c for c in get_top_nodes(Gph, name)]
-        is_interesting = True
-        if len(names) > 20:
-            # print((common_HS[0] in cmdties[1]), (common_HS[1] in cmdties[1]))
-            if (common_HS[0] in cmdties[1]) or (common_HS[1] in cmdties[1]):
-                is_interesting = True
-            else:
-                is_interesting = False
-        if (len(cmdties) > 2) and is_interesting and i < 20:
-            i += 1
-            s = ' '.join([
-                '{0} has exported {1} different commodities'
-            ])
-        print(s.format(name, len(cmdties)))
+        # is_interesting = True
+        # if len(names) > 20:
+        #     # print((common_HS[0] in cmdties[1]), (common_HS[1] in cmdties[1]))
+        #     if (common_HS[0] in cmdties[1]) or (common_HS[1] in cmdties[1]):
+        #         is_interesting = True
+        #     else:
+        #         is_interesting = False
+        # if (len(cmdties) > 2) and is_interesting and i < 20:
+        #     i += 1
+        #     s = ' '.join([
+        #         '{0} has exported {1} different commodities'
+        #     ])
+        # print(s.format(name, len(cmdties)))
     retdict = {}
     for name in names:
         retvals = dict([(c[1], c[2]) for c in get_top_nodes(Gph, name)])
