@@ -7,11 +7,11 @@ import numpy as np
 import pandas as pd
 from sklearn import linear_model
 from sklearn.externals import joblib
-from flask import Flask #,request
-from flask_restplus import Resource, Api #, reqparse
+# from flask import Flask #,request
+# from flask_restplus import Resource, Api #, reqparse
 
-app = Flask(__name__)
-api = Api(app)
+# app = Flask(__name__)
+# api = Api(app)
 
 def get_top_nodes(Gph, company):
     """
@@ -63,7 +63,7 @@ def HS_to_predicted_SIC(HScode):
     return prediction
 
 
-@api.route('/<str:args>')
+# @api.route('/<str:args>')
 def main(*args):
     """Runs the main program"""
     rg = []
@@ -122,15 +122,18 @@ def main(*args):
                 '{0} has exported {1} different commodities'
             ])
             # print(s.format(name, len(cmdties)))
-    return {'competitors': dict(
-        [[c for c in get_top_nodes(Gph, name)] for name in names]
-        )}
+    retdict = {}
+    for i, name in enumerate(names):
+        retvals = dict([(c[1], c[2]) for c in get_top_nodes(Gph, name)])
+        retdict[name] = retvals
+    # print(retdict)
+    return {'competitors': dict(retdict)}
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    # import sys
-    # main(sys.argv)
+    # app.run(debug=True)
+    import sys
+    main(sys.argv)
 
 # 84118280 84119900
 # 94033019 94034090
