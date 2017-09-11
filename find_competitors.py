@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn import linear_model
 from sklearn.externals import joblib
 from flask import Flask, request, jsonify
-from flask_restplus import Resource, Api #, reqparse
+#from flask_restplus import Resource, Api #, reqparse
 
 app = Flask(__name__)
 #api = Api(app)
