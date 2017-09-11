@@ -69,16 +69,16 @@ def HS_to_predicted_SIC(HScode):
 @app.route('/', methods=['GET'])
 def main():
     """Runs the main program"""
-    rg = request.args.items()
+    rg = dict(request.args.items())
     print('rg =', rg)
     print('Loading main graph ...')
     sourcedata='Export_combined_summary.csv'
     Gph = load_data(sourcedata)
 
-    if rg.has_key('cn1') and rg.has_key('cn2'):  # given two commodity codes
-        common_HS = [rg.get('cn1'), rg.get('cn2')]
-    elif rg.has_key('name'):  # given a company name
-        tops = [t for t in get_top_nodes(Gph, rg.get('name'))]
+    if ('cn1' in rg) and ('cn2' in rg):  # given two commodity codes
+        common_HS = [rg['cn1'], rg['cn2']]
+    elif 'name' in rg:  # given a company name
+        tops = [t for t in get_top_nodes(Gph, rg['name'])]
         if len(tops) > 1:
             top1, top2 = tops[:2]
         else:
