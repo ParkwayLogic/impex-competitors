@@ -69,7 +69,7 @@ def HS_to_predicted_SIC(HScode):
 @app.route('/', methods=['GET'])
 def main():
     """Runs the main program"""
-    rg = dict(request.args.items())
+    rg = request.args.items()
     print('rg =', rg)
     print('Loading main graph ...')
     sourcedata='Export_combined_summary.csv'
@@ -134,7 +134,7 @@ def main():
 
 @app.errorhandler(500)
 def server_error(e):
-   logging.exception('An error occurred during a request.')
+   #logging.exception('An error occurred during a request.')
    return """
    An internal error occurred: <pre>{}</pre>
    See logs for full stacktrace.
