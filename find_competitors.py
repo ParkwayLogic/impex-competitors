@@ -5,11 +5,9 @@ import sys
 sys.path.insert(0,'lib')
 import csv, utils
 import networkx as nx
-import numpy as np
 import pandas as pd
-from sklearn import linear_model
-from sklearn.externals import joblib
-from flask import Flask, request, jsonify
+from json import dumps
+from flask import Flask, request, jsonify, g, Response
 
 app = Flask(__name__)
 
@@ -86,7 +84,9 @@ def main():
         cmdties = dict([(c[1], c[2]) for c in get_top_nodes(Gph, name)])
         retdict[name] = cmdties
     print('Returning result as json object')
-    return jsonify({'competitors': dict(retdict)}), 200
+    # return jsonify({'competitors': dict(retdict)}), 200
+    return Response(dumps({'competitors': dict(retdict)}),
+        mimetype="application/json")
 
 
 @app.errorhandler(500)
