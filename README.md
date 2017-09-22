@@ -1,3 +1,3 @@
 # import-export-test1
 
-Testing
+No license is offered at present to use, modify, or share.
