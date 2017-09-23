@@ -7,7 +7,7 @@ import csv, utils
 import networkx as nx
 import pandas as pd
 from json import dumps
-from flask import Flask, request, jsonify, g, Response
+from flask import Flask, request, jsonify, Response
 
 app = Flask(__name__)
 
@@ -35,7 +35,7 @@ def load_data(sourcedata):
             Gph.add_edge(row[2], row[1], monthcount=row[3])
             # if i < 20: print(Gph.edges())
     return Gph
-    
+
 
 @app.route('/', methods=['GET'])
 def main():
@@ -98,8 +98,10 @@ def server_error(e):
 
 
 if __name__ == '__main__':
-    print('Server running...')
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    host='127.0.0.1'
+    port=8080
+    print('Server running on http://{0}:{1}...'.format(host, port))
+    app.run(host=host, port=port, debug=True)
 
 # 84118280 84119900
 # 94033019 94034090
