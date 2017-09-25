@@ -1,12 +1,64 @@
 """
-Utility functions for HS codes and SIC codes
+Utility functions for
+Decoding odd characters in files
+Dealing for HS codes and SIC codes
 """
-import numpy as np
 import pandas as pd
 import sys, logging
+import pkgutil
+import encodings, nltk
+import os
+from collections import defaultdict
+
 
 logging.basicConfig(filename="utils_logfile.log", level=logging.INFO)
 # DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+
+def all_encodings():
+	"""Gather all file encodings in pkgutil"""
+	modnames = set(
+		[modname for importer, modname, ispkg in pkgutil.walk_packages(
+			path=[os.path.dirname(encodings.__file__)], prefix='')]
+		)
+	aliases = set(encodings.aliases.aliases.values())
+	return modnames.union(aliases)
+
+
+def suggest_encodings(char_error_code, char_to_find=None):
+	"""
+	Suggest encodings for odd characters found (typically in csv files)
+	"""
+	for enc in all_encodings():
+		try:
+			# msg = char_error_code.decode(enc)
+			msg = char_error_code.decode(enc)
+		except Exception:
+			continue
+		if (msg == char_to_find) or (char_to_find == None):
+			print('Decoding {t} with {enc} is {m}'.format(
+				t=char_error_code, enc=enc, m=msg))
+
+
+deft_CNlist = [84118280, 84119900, 94033019, 94034090, 82121090, 84191100, 
+1022949, 1061900, 3023519, 48025890, 48026115, 48026180, 48041190, 63014090, 63022290,
+70131000, 70132210]
+
+def wordcloud(CNlist=deft_CNlist, howmany=20):
+	"""Returns lowercase wordcloud for commodities"""
+	wcloud = defaultdict(int)
+	stopwords = ['of', 'and', 'in', 'with', '.', '=', '<', '>', 'a', 'the', 'for', 'or', 
+	'(', ')', ',', 'but', 'any', 'by', "''", '``', 'which', '%', 'consists']
+	stopwords = stopwords + ['excl', 'total', 'n.e.s', 'other', 'purposes', 'like']
+	for c in CNlist:
+		desc = get_desc_by_CN(str(c))['Self-Explanatory text (English)'].values
+		tokens = nltk.word_tokenize(str(desc[0]).lower())  #.split(' ')
+		for tk in tokens:
+			if tk not in stopwords: wcloud[tk] += 1
+
+	wcloud = sorted(wcloud.items(), key=lambda tup: tup[1], reverse=True)
+	[print(w, c) for w, c in wcloud[:howmany]]
+
 
 def _make_8char_CN(trialstring):
 	# Converts a Commodity Code to an 8-digit string
@@ -105,5 +157,16 @@ def get_desc_by_CN(CNcode, verbose=False):
 	return outdf
 
 
+def update_progress_bar(progress, time_elapsed, prefix="", suffix=""): # remcount
+    """progress from zero+ to one"""
+    togo = time_elapsed*(1-progress)/progress/60
+    if togo > 240:
+        print("\rProgress: [{0:.<20s}] {1:.2f}%, {2:,}s elapsed, ~{3:,} hrs to go{4}".format(
+                '#'*int(progress*20), progress*100, int(time_elapsed), int(togo/60), str(suffix)
+            ), end='')
+    else:
+        print("\rProgress: [{0:.<20s}] {1:.2f}%, {2:,}s elapsed, ~{3:,} mins to go{4}".format(
+                '#'*int(progress*20), progress*100, int(time_elapsed), togo, str(suffix)
+            ), end='')
 
 
